@@ -21,6 +21,7 @@ const app = {
     isRandom: false,
     isRepeat: false,
     config:JSON.parse(localStorage.getItem(PLAYER_STORAGE))||{},
+    playCounts: JSON.parse(localStorage.getItem('PLAYER_STORAGE_COUNT')) || {},
     songs: [
         {
             name: 'Nevadar',
@@ -89,7 +90,8 @@ const app = {
                 <div class="body">
                     <h3 class="title">${song.name}</h3>
                     <p class="author">${song.singer}</p>
-                    <p class="count">Plays: ${count}</p>
+                    <p class="play-count">Plays: ${this.playCounts[index] || 0}</p>
+
                 </div>
                 <div class="option">
                     <i class="fas fa-ellipsis-h"></i>
@@ -153,6 +155,18 @@ const app = {
             _this.isPlaying = true
             player.classList.add('playing')
             cdThumbAnimate.play()
+
+            // Cập nhật số lần phát
+            const index = _this.currentIndex;
+            _this.playCounts[index] = (_this.playCounts[index] || 0) + 1;
+            localStorage.setItem('PLAYER_STORAGE_COUNT', JSON.stringify(_this.playCounts));
+
+            // Cập nhật biểu đồ
+            _this.updateChart();
+
+            // Cập nhật giao diện "Plays: x" trong playlist
+            _this.render();
+
         }
         //Khi song bị pause
         audio.onpause = function () {
@@ -327,6 +341,41 @@ const app = {
     },
 
 
+updateChart: function () {
+    const ctx = document.getElementById('chart').getContext('2d');
+    
+    const labels = this.songs.map(song => song.name);
+    const data = this.songs.map((_, index) => this.playCounts[index] || 0);
+
+    if (this.chart) {
+        this.chart.data.datasets[0].data = data;
+        this.chart.update();
+    } else {
+        this.chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Play count',
+                    data: data,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+},
+
+
+
     start: function () {
         //Cấu hình từ config vào úng dụng
         this.loadConfig()
@@ -341,6 +390,8 @@ const app = {
         //Hiển thị trạng thái ban đầu của nút rêpeat và random
         reaptBtn.classList.toggle('active', this.isRepeat)
         randomBtn.classList.toggle('active',this.isRandom)
+        this.updateChart();
+
     }
 }
 app.start();
