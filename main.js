@@ -77,22 +77,40 @@ const app = {
         localStorage.setItem(PLAYER_STORAGE,JSON.stringify(this.config))
     },
     render: function () {
-        const htmls = this.songs.map((song, index) => {
-            return `
-            <div class="song ${index === this.currentIndex ? 'active' : ''}"data-index="${index}">
-            <div class="thumb" style="background-image: url('${song.image}')">
+  const playCounts = this.getPlayCounts(); // Lấy dữ liệu thống kê
+
+    const htmls = this.songs.map((song, index) => {
+        const key = song.name + '|' + song.singer;
+        const count = playCounts[key] || 0;
+
+        return `
+            <div class="song ${index === this.currentIndex ? 'active' : ''}" data-index="${index}">
+                <div class="thumb" style="background-image: url('${song.image}')"></div>
+                <div class="body">
+                    <h3 class="title">${song.name}</h3>
+                    <p class="author">${song.singer}</p>
+                    <p class="count">Plays: ${count}</p>
+                </div>
+                <div class="option">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
             </div>
-            <div class="body">
-              <h3 class="title">${song.name}</h3>
-              <p class="author">${song.singer}</p>
-            </div>
-            <div class="option">
-              <i class="fas fa-ellipsis-h"></i>
-            </div>
-          </div>
-            `
-        })
+        `;
+    }
+    )
         playlist.innerHTML = htmls.join('')
+
+    const recommended = this.getMostPlayedSong();
+    if (recommended) {
+        const notice = document.createElement('div');
+        notice.className = 'recommend-box';
+        notice.innerHTML = `
+            <div><strong>Recommended for you:</strong> ${recommended.name} - ${recommended.singer}</div>
+        `;
+        playlist.prepend(notice);
+}
+
+
     },
     defineProperties: function () {
         Object.defineProperty(this, 'currentSong', {
@@ -229,7 +247,23 @@ const app = {
         heading.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
         audio.src = this.currentSong.path;
+
+        this.logListeningHistory(); // Ghi lại lịch sử nghe nhạc
     },
+
+    logListeningHistory: function () {
+        const history = JSON.parse(localStorage.getItem('listeningHistory')) || [];
+        const currentTime = new Date().toISOString();
+
+        history.push({
+            song: this.currentSong.name,
+            singer: this.currentSong.singer,
+            time: currentTime
+        });
+
+        localStorage.setItem('listeningHistory', JSON.stringify(history));
+    },
+
     nextSong: function () {
         this.currentIndex++
         if (this.currentIndex >= this.songs.length) {
@@ -253,6 +287,46 @@ const app = {
         this.currentIndex = newIndex
         this.loadCurrentSong()
     },
+
+    getMostPlayedSong: function () {
+    const history = JSON.parse(localStorage.getItem('listeningHistory')) || [];
+    const playCountMap = {};
+
+    history.forEach(item => {
+        const key = item.song + '|' + item.singer;
+        playCountMap[key] = (playCountMap[key] || 0) + 1;
+    });
+
+    let mostPlayed = null;
+    let maxCount = 0;
+
+    for (const key in playCountMap) {
+        if (playCountMap[key] > maxCount) {
+            maxCount = playCountMap[key];
+            mostPlayed = key;
+        }
+    }
+
+    if (mostPlayed) {
+        const [name, singer] = mostPlayed.split('|');
+        return this.songs.find(song => song.name === name && song.singer === singer);
+    }
+
+    return null;
+    },
+    getPlayCounts: function () {
+        const history = JSON.parse(localStorage.getItem('listeningHistory')) || [];
+        const counts = {};
+
+        history.forEach(item => {
+            const key = item.song + '|' + item.singer;
+            counts[key] = (counts[key] || 0) + 1;
+        });
+
+        return counts;
+    },
+
+
     start: function () {
         //Cấu hình từ config vào úng dụng
         this.loadConfig()

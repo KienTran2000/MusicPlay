@@ -187,3 +187,19 @@
     font-size: 18px;
   }
   
+  .recommend-box {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+.song .count {
+  font-size: 12px;
+  color: #666;
+}
+.song.active .count {
+  color: #fff;
+}
