@@ -341,26 +341,69 @@ const app = {
     },
 
 
-updateChart: function () {
-    const ctx = document.getElementById('chart').getContext('2d');
-    
-    const labels = this.songs.map(song => song.name);
-    const data = this.songs.map((_, index) => this.playCounts[index] || 0);
+    updateChart: function () {
+        const ctx = document.getElementById('chart').getContext('2d');
+        
+        const labels = this.songs.map(song => song.name);
+        const data = this.songs.map((_, index) => this.playCounts[index] || 0);
 
-    if (this.chart) {
-        this.chart.data.datasets[0].data = data;
-        this.chart.update();
+        if (this.chart) {
+            this.chart.data.datasets[0].data = data;
+            this.chart.update();
+        } else {
+            this.chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Play count',
+                        data: data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    },
+
+    renderTrendingChart: function () {
+    const history = JSON.parse(localStorage.getItem('listeningHistory')) || [];
+    const countMap = {};
+
+    history.forEach(item => {
+        const key = item.song + '|' + item.singer;
+        countMap[key] = (countMap[key] || 0) + 1;
+    });
+
+    const sorted = Object.entries(countMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5); // Top 5
+
+    const labels = sorted.map(item => item[0].split('|')[0]); // song name
+    const data = sorted.map(item => item[1]);
+
+    const ctx = document.getElementById('trendingChart').getContext('2d');
+    if (this.trendingChart) {
+        this.trendingChart.data.labels = labels;
+        this.trendingChart.data.datasets[0].data = data;
+        this.trendingChart.update();
     } else {
-        this.chart = new Chart(ctx, {
+        this.trendingChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Play count',
+                    label: 'Top Five Songs Trending',
                     data: data,
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
+                    backgroundColor: 'orange'
                 }]
             },
             options: {
@@ -374,7 +417,50 @@ updateChart: function () {
     }
 },
 
+getListeningTimeStats: function () {
+    const history = JSON.parse(localStorage.getItem('listeningHistory')) || [];
+    const hourStats = new Array(24).fill(0); // Tạo mảng 24 giờ
 
+    history.forEach(item => {
+        const hour = new Date(item.time).getHours(); // lấy giờ
+        hourStats[hour]++;
+    });
+
+    return hourStats;
+},
+
+updateTimeChart: function () {
+    const ctx = document.getElementById('timeChart').getContext('2d');
+    const data = this.getListeningTimeStats();
+
+    const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+
+    if (this.timeChart) {
+        this.timeChart.data.datasets[0].data = data;
+        this.timeChart.update();
+    } else {
+        this.timeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Listening Frequency by Hour',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.4)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+},
 
     start: function () {
         //Cấu hình từ config vào úng dụng
@@ -391,6 +477,9 @@ updateChart: function () {
         reaptBtn.classList.toggle('active', this.isRepeat)
         randomBtn.classList.toggle('active',this.isRandom)
         this.updateChart();
+        this.renderTrendingChart();
+        this.updateTimeChart();
+
 
     }
 }
