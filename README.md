@@ -39,8 +39,6 @@ This project is intended to visualize how users engage with a music app in real-
 ├── index.html              # Web interface for player + charts
 ├── style.css               # Custom CSS styling
 ├── main.js                 # Logic for chart rendering and interactivity
-├── data/
-│   └── musicData.json      # Contains play count, song metadata, and timestamps
 └── README.md               # This documentation file
 ```
 
@@ -82,6 +80,7 @@ This project is intended to visualize how users engage with a music app in real-
 ### 3. Demo
 
 https://private-user-images.githubusercontent.com/77290046/474342109-c447edbc-c04e-4a2b-a9ab-13a72e794263.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTQzNzQ2MzMsIm5iZiI6MTc1NDM3NDMzMywicGF0aCI6Ii83NzI5MDA0Ni80NzQzNDIxMDktYzQ0N2VkYmMtYzA0ZS00YTJiLWE5YWItMTNhNzJlNzk0MjYzLm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA4MDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwODA1VDA2MTIxM1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWEyMDVhMWVkOTg5YjdmODlmZWJhMTlkNzYzZjdlZWI0ZjA0M2FlMDk3YjM0YjAwZTJmNzEyZTQyZDk5ZTg5MTcmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.ybHKj4FLjzRLKnYBanCycQuUvhGEvnfMicpjFnDki6w
+
 ---
 
 ## Licensing, Authors, and Acknowledgements
