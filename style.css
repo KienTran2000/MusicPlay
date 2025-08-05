@@ -203,3 +203,34 @@
 .song.active .count {
   color: #fff;
 }
+
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+/* Player section như cũ nhưng mở rộng tối đa một nửa màn hình */
+.player {
+  flex: 1;
+  max-width: 480px;
+}
+
+/* Chart column */
+.charts {
+  flex: 1;
+  min-width: 300px;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.charts canvas {
+  width: 100% !important;
+  height: auto !important;
+}
