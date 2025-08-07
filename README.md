@@ -84,5 +84,5 @@ https://private-user-images.githubusercontent.com/77290046/474342109-c447edbc-c0
 ---
 
 ## Licensing, Authors, and Acknowledgements
-https://github.com/user-attachments/files/21661329/IAM_Project_TranTrungKien.pdf
+
 Developed by Kien Tran  
